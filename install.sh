@@ -27,7 +27,7 @@ download_icon() {
   if [[ ! -f ${icon_path}   ]]; then
     echo "Downloading Tailscale icon..."
     mkdir -p "$(dirname "${icon_path}")"
-    curl -L "https://raw.githubusercontent.com/error-try-again/KDE-Dolphin-TailDrop-Plugin/main/tailscale.png" -o "${icon_path}"
+    curl -L "https://raw.githubusercontent.com/Stalloevan/KDE-Dolphin-TailDrop-Plugin/main/tailscale.png" -o "${icon_path}"
   fi
 }
 
@@ -96,7 +96,7 @@ main() {
         # Extract friendly name
         friendly_name=$(echo "${line}" | awk '{print $2}')
     
-        if [[ -n "${friendly_name}" ]]; then
+        if [[ -n "${friendly_name}" ]] && [[ "${friendly_name}" != "-" ]] && [[ "${friendly_name}" != "Health" ]]; then
             name_list+=("${friendly_name}")
         fi
     done <<< "${status_output}"
@@ -216,12 +216,27 @@ Name=Send via Taildrop
 Icon=${HOME}/Themes/Icons/tailscale.png
 Exec=${taildrop_script} %F
 EOF
+
+  make_executable "${desktop_file_path}"
+
 }
 
 # Main function
 main() {
-  local taildrop_script="${HOME}/.config/dolphin_service_menus_creator/taildrop_script.sh"
-  local desktop_file_path="${HOME}/.local/share/kservices5/ServiceMenus/Taildrop.desktop"
+  local taildrop_script=""
+  local desktop_file_path=""
+
+  if which qtpaths &>/dev/null ; then
+    echo "KDE 6 detected"
+    taildrop_script="${HOME}/.config/dolphin_service_menus_creator/taildrop_script.sh"
+    desktop_file_path="${HOME}/.local/share/kio/servicemenus/Taildrop.desktop"
+
+  else
+    echo "KDE 5 detected"
+    taildrop_script="${HOME}/.config/dolphin_service_menus_creator/taildrop_script.sh"
+    desktop_file_path="${HOME}/.local/share/kservices5/ServiceMenus/Taildrop.desktop"
+  fi
+
 
   download_icon
   generate_taildrop_script "${taildrop_script}"
