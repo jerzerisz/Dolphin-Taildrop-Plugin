@@ -225,8 +225,9 @@ EOF
 main() {
   local taildrop_script=""
   local desktop_file_path=""
-
-  if which qtpaths &>/dev/null ; then
+  dolphin_ver=$(dolphin --version 2>&1 | grep -i -c -E  "dolphin (2[4-9\.]+)")
+ 
+  if [[ $dolphin_ver -eq 1 ]] ; then
     echo "KDE 6 detected"
     taildrop_script="${HOME}/.config/dolphin_service_menus_creator/taildrop_script.sh"
     desktop_file_path="${HOME}/.local/share/kio/servicemenus/Taildrop.desktop"
